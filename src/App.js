@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import React, { Component } from 'react';
+import { Statistics } from './components/Statistics/Statistics';
+
+class App extends Component {
+  state = {
+    good: 0,
+    neutral: 0,
+    bad: 0,
+  };
+
+  onBtnClick = key => {
+    this.setState(prevState => ({ [key]: prevState[key] + 1 }));
+  };
+
+  countTotalFeedback = () => {
+    Object.values(this.state).reduce((sum, value) => sum + value, 0);
+  };
+
+  countPositiveFeedbackPercentage() {}
+
+  render() {
+    const { good, neutral, bad } = this.state;
+    const total = this.countTotalFeedback();
+
+    return (
+      <>
+        <h2>Please leave feedback</h2>
+        {Object.keys(this.state).map(key => (
+          <button key={key} type="button" onClick={() => this.onBtnClick(key)}>
+            {key}
+          </button>
+        ))}
+
+        <Statistics good={good} neutral={neutral} bad={bad} total={total} />
+      </>
+    );
+  }
 }
 
 export default App;
