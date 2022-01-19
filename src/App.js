@@ -2,6 +2,9 @@
 
 import React, { Component } from 'react';
 import { Statistics } from './components/Statistics/Statistics';
+import { FeedbackOptions } from './components/FeedbackOptions/FeedbackOptions';
+import { Section } from './components/Section/Section';
+import { Notification } from './components/Notification/Notification';
 
 class App extends Component {
   state = {
@@ -10,30 +13,45 @@ class App extends Component {
     bad: 0,
   };
 
-  onBtnClick = key => {
+  onLeaveFeedback = key => {
     this.setState(prevState => ({ [key]: prevState[key] + 1 }));
   };
 
   countTotalFeedback = () => {
-    Object.values(this.state).reduce((sum, value) => sum + value, 0);
+    return Object.values(this.state).reduce((sum, value) => sum + value, 0);
   };
 
-  countPositiveFeedbackPercentage() {}
+  countPositiveFeedbackPercentage = () => {
+    const total = this.countTotalFeedback();
+
+    return Math.round((this.state.good * 100) / total);
+  };
 
   render() {
     const { good, neutral, bad } = this.state;
-    const total = this.countTotalFeedback();
 
     return (
       <>
-        <h2>Please leave feedback</h2>
-        {Object.keys(this.state).map(key => (
-          <button key={key} type="button" onClick={() => this.onBtnClick(key)}>
-            {key}
-          </button>
-        ))}
+        <Section title="Please leave feedback">
+          <FeedbackOptions
+            options={Object.keys(this.state)}
+            onLeaveFeedback={this.onLeaveFeedback}
+          />
+        </Section>
 
-        <Statistics good={good} neutral={neutral} bad={bad} total={total} />
+        <Section title="Statistics">
+          {this.countTotalFeedback() ? (
+            <Statistics
+              good={good}
+              neutral={neutral}
+              bad={bad}
+              total={this.countTotalFeedback()}
+              positiveFeedback={this.countPositiveFeedbackPercentage(good)}
+            ></Statistics>
+          ) : (
+            <Notification message="There is no feedback" />
+          )}
+        </Section>
       </>
     );
   }
